@@ -3,61 +3,412 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"> 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/five-icons/dist/five-icons.min.css">
-    <meta name="msapplication-TileColor" content="#ffffff">
-    <meta name="theme-color" content="#ffffff">
+    <title>Home</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     {% load static %}
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --sidebar-bg: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: var(--sidebar-bg);
+            min-height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+        
+        .sidebar-header h3 {
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+            padding: 1rem 0;
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-radius: 0 25px 25px 0;
+            margin-right: 1rem;
+        }
+        
+        .sidebar-menu a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        .sidebar-menu a.active {
+            background: var(--primary-gradient);
+            color: white;
+        }
+        
+        .sidebar-menu i {
+            margin-right: 1rem;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .sidebar-footer {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        
+            .page-header {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative; /* Alterado para relative */
+            overflow: hidden;
+            
+            right: -700px; 
+            width: auto;  
+        }
+
+        
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 50;
+            height: 4px;
+            right: -700px; 
+            width: auto;  
+
+            background: var(--primary-gradient);
+        }
+        
+        .page-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+
+        }
+        
+        .search-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+            right: -700px; 
+            width: auto;  
+
+        }
+            
+        
+        .search-bar {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            right: -700px; 
+            width: auto;  
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 1rem 1.5rem 1rem 3rem;
+            border: 2px solid #e9ecef;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+
+        }
+        
+        .search-bar input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            outline: none;
+
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+  
+        }
+        
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            color: white;
+            cursor: pointer;
+
+        }
+        
+        .feature-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+             right: -700px; 
+            width: auto;  
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+             right: -700px; 
+            width: auto;  
+        }
+        
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+             right: -700px; 
+            width: auto;  
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+             right: -700px; 
+            width: auto;  
+        }
+        
+        .feature-card.primary::before { background: var(--primary-gradient); }
+        .feature-card.secondary::before { background: var(--secondary-gradient); }
+        .feature-card.success::before { background: var(--success-gradient); }
+        .feature-card.warning::before { background: var(--warning-gradient); }
+        
+        .feature-card .icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-card.primary .icon { background: var(--primary-gradient); }
+        .feature-card.secondary .icon { background: var(--secondary-gradient); }
+        .feature-card.success .icon { background: var(--success-gradient); }
+        .feature-card.warning .icon { background: var(--warning-gradient); }
+        
+        .feature-card h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+        }
+        
+        .feature-card p {
+            color: #6c757d;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .btn-card {
+            background: transparent;
+            border: 2px solid #e9ecef;
+            color: #6c757d;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        
+        .feature-card:hover .btn-card {
+            border-color: #667eea;
+            color: #667eea;
+        }
+        
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.2rem;
+            color: white;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        
+        .content-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
 </head>
 <body>
     <div class="d-flex">
+        <!-- Sidebar -->
         <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
+                <h3><i class="fas fa-cogs me-2"></i>Home</h3>
             </div>
             <ul class="sidebar-menu">
-                <li><a href="{% url 'search_jobs' %}"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="{% url 'search_jobs' %}" class="active"><i class="fas fa-home"></i> Home</a></li>
                 <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
                 <li><a href="{% url 'admin:index' %}"><i class="fas fa-user-cog"></i> Admin</a></li>
+                <li><a href="/procedimentos/"><i class="fas fa-book-open"></i> Base Conhecimento</a></li>
+                <li><a href="/helpdesk/"><i class="fas fa-ticket-alt"></i> Helpdesk</a></li>
                 <li><a href="{% url 'all_servers' %}"><i class="fas fa-server"></i> Servers C&C</a></li>
-                <li><a href="{% url 'all_FastShop' %}"><i class="fas fa-server"></i> Servers Fast</a></li>
+                <li><a href="{% url 'all_FastShop' %}"><i class="fas fa-shopping-cart"></i> Servers Fast</a></li>
                 <li><a href="{% url 'hard' %}"><i class="fas fa-microchip"></i> Hardware</a></li>
                 <li><a href="{% url 'all_jobs' %}"><i class="fas fa-table"></i> TWS</a></li>
                 <li><a href="{% url 'ajuda' %}"><i class="fas fa-question-circle"></i> Ajuda</a></li>
             </ul>
-
-            <li><a href="{% url 'procedimentos:buscar' %}" class="btn btn-primary">
-                    <i class="fas fa-cogs"></i> Procedimentos
-                </a></li>
-            </ul>
-
-            
             <div class="sidebar-footer"> 
                 <form action="{% url 'logout' %}" method="post">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-outline-danger" aria-label="Logout">
-                        <i class="fas fa-sign-out-alt"></i> Logout
+                    <button type="submit" class="btn btn-outline-light" aria-label="Logout">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
                     </button>
                 </form>
             </div>
         </nav>
 
-        <main class="content flex-grow-1">
-            <header>
-		   <h1 class="mt-4 mb-4 text-center">C&C</h1>
-	    </header>
-            <div class="container">
-                <form id="search-form" method="post" class="mb-4">
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <h1><i class="fas fa-cogs me-3"></i>OPERAÇÃO - BOC</h1>
+                <p>Central de Comando e Controle - Sua plataforma unificada de operações</p>
+            </div>
+
+            <!-- Search Container -->
+            <div class="search-container">
+                <form id="search-form" method="post">
                     {% csrf_token %}
-                    <div class="search-bar d-flex justify-content-center">
-                        <input type="text" name="search_query" placeholder="Busque..." class="form-control me-2" autocomplete="on">
-                        <button type="submit">
-                            <img src="{% static 'images/icons/discernimento.png' %}" alt="Buscar" style="width: 20px; height: 20px;">
+                    <div class="search-bar">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" name="search_query" placeholder="Busque servidores, jobs, hardware..." autocomplete="on">
+                        <button type="submit" class="search-btn">
+                            <i class="fas fa-search me-2"></i>Buscar
                         </button>
                     </div>
                 </form>
-                
+            </div>
+
+            <!-- Feature Cards -->
                 <div id="server_results">
                     {% include 'jobs/server.html' %}
                     <!-- Paginação para servidores -->
@@ -144,6 +495,51 @@
             $('#sidebar-toggle').click(function() {
                 $('#sidebar').toggleClass('hidden');
                 $('.content').toggleClass('expanded');
+            });
+        });
+    </script>
+</body>
+</html>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            // Mantendo funcionalidade original do search
+            $('#search-form').submit(function(e) {
+                $('#server_results, #job-results').show();
+            });
+            
+            // Animações nos cards
+            $('.feature-card').hover(
+                function() {
+                    $(this).find('.btn-card').css('transform', 'scale(1.05)');
+                },
+                function() {
+                    $(this).find('.btn-card').css('transform', 'scale(1)');
+                }
+            );
+
+            // Menu ativo
+            $('.sidebar-menu a').click(function() {
+                $('.sidebar-menu a').removeClass('active');
+                $(this).addClass('active');
+            });
+
+            // Animação dos números nas estatísticas
+            $('.stat-number').each(function() {
+                const $this = $(this);
+                const finalValue = parseInt($this.text());
+                
+                $({ counter: 0 }).animate({ counter: finalValue }, {
+                    duration: 2000,
+                    easing: 'swing',
+                    step: function() {
+                        $this.text(Math.ceil(this.counter));
+                    }
+                });
             });
         });
     </script>

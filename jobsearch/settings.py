@@ -161,6 +161,4 @@ LOGGING = {
 }
 
 MEDIA_URL = '/media/'
-
-# Diretório absoluto onde os arquivos de mídia serão armazenados
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media', 'procedimentos', 'imagens')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

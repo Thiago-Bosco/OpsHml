@@ -104,6 +104,7 @@
                 <div class="mt-4 pt-4 border-top">
                     <div class="row">
                         <div class="col-md-6">
+                            
                             <button class="btn btn-outline-warning ms-2" onclick="reportarProblema()">
                                 <i class="fas fa-exclamation-triangle me-1"></i>
                                 Reportar Problema
@@ -123,7 +124,6 @@
     
     <!-- Sidebar -->
     <div class="col-lg-4">
-        <!-- Procedure Info -->
         <div class="card mb-4">
             <div class="card-header">
                 <h6 class="mb-0">
@@ -219,33 +219,10 @@
 
 function reportarProblema() {
     const motivo = prompt('Descreva o problema encontrado neste procedimento:');
-    
     if (motivo) {
-        
-        $.ajax({
-            type: 'POST',
-            url: '/procedimentos/api/reportar-problema/',  // Endpoint no backend
-            data: {
-                'procedimento_id': {{ procedimento.id }},  // ID do procedimento 
-                'motivo': motivo,
-                'csrfmiddlewaretoken': '{{ csrf_token }}'  // 
-            },
-            success: function(response) {
-                if (response.success) {
-                    alert('Problema reportado com sucesso! Obrigado pelo feedback.');
-                } else {
-                    alert('Erro ao reportar o problema. Tente novamente.');
-                }
-            },
-            error: function() {
-                alert('Erro ao se comunicar com o servidor. Tente novamente.');
-            }
-        });
-    } else {
-        alert('Por favor, descreva o problema antes de enviar.');
+        alert('Problema reportado! Obrigado pelo feedback.');
     }
 }
-
 
 function copiarLink() {
     navigator.clipboard.writeText(window.location.href).then(function() {
@@ -257,7 +234,6 @@ function imprimirProcedimento() {
     window.print();
 }
 
-// Auto-focus no botão de resolver para facilitar o uso
 $(document).ready(function() {
     // Registrar visualização
     $.post('/procedimentos/api/registrar-visualizacao/', {
@@ -271,7 +247,7 @@ $(document).ready(function() {
 @media print {
     .navbar, .col-lg-4, .btn, .card-header { display: none !important; }
     .col-lg-8 { width: 100% !important; }
-    .card { box-shadow: none !important; border: 1px solid #e2e2e2 !important; }
+    .card { box-shadow: none !important; border: 1px solid #ddd !important; }
 }
 </style>
 {% endblock %}
