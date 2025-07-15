@@ -1,0 +1,359 @@
+{% extends 'procedimentos/base.html' %}
+
+{% block title %}Buscar Procedimentos - OpsFinder{% endblock %}
+
+{% block content %}
+<!-- Search Container -->
+<div class="search-container">
+    <h1 class="mb-4">
+        <i class="fas fa-search text-primary me-2"></i>
+        Base de Conhecimento
+    </h1>
+    
+    <form method="get" class="row g-3" id="searchForm">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input type="text" class="form-control" name="q" value="{{ query }}" 
+                       placeholder="Buscar por título, descrição, solução ou tags..." id="searchInput">
+            </div>
+        </div>
+        
+        <div class="col-md-3">
+            <select class="form-select" name="categoria" id="categoriaSelect">
+                <option value="">Todas as Categorias</option>
+                {% for categoria in categorias %}
+                    <option value="{{ categoria.id }}" {% if categoria.id|stringformat:"s" == categoria_selecionada %}selected{% endif %}>
+                        {{ categoria.nome }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="col-md-3">
+            <select class="form-select" name="prioridade" id="prioridadeSelect">
+                <option value="">Todas as Prioridades</option>
+                {% for valor, nome in prioridades %}
+                    <option value="{{ valor }}" {% if valor == prioridade_selecionada %}selected{% endif %}>
+                        {{ nome }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary me-2">
+                <i class="fas fa-search me-1"></i>
+                Buscar
+            </button>
+            <a href="{% url 'procedimentos:buscar' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-refresh me-1"></i>
+                Limpar
+            </a>
+        </div>
+    </form>
+    
+    <!-- Quick Filters -->
+    <div class="mt-3">
+        <h6 class="text-muted mb-2">Filtros Rápidos:</h6>
+        <div class="d-flex flex-wrap">
+            <span class="filter-chip" data-filter="prioridade" data-value="critica">
+                <i class="fas fa-exclamation-triangle me-1"></i>
+                Crítica
+            </span>
+            <span class="filter-chip" data-filter="prioridade" data-value="alta">
+                <i class="fas fa-arrow-up me-1"></i>
+                Alta Prioridade
+            </span>
+            {% for categoria in categorias|slice:":5" %}
+                <span class="filter-chip" data-filter="categoria" data-value="{{ categoria.id }}">
+                    {% if categoria.icone %}
+                        <i class="{{ categoria.icone }} me-1"></i>
+                    {% endif %}
+                    {{ categoria.nome }}
+                </span>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Results -->
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Results Count -->
+        {% if procedimentos %}
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-muted mb-0">
+                    <i class="fas fa-list me-1"></i>
+                    {{ procedimentos.paginator.count }} procedimento{{ procedimentos.paginator.count|pluralize }}
+                    {% if query %}para "{{ query }}"{% endif %}
+                </h5>
+                
+                <div class="btn-group btn-group-sm" role="group">
+                    <input type="radio" class="btn-check" name="viewMode" id="listView" autocomplete="off" checked>
+                    <label class="btn btn-outline-secondary" for="listView">
+                        <i class="fas fa-list"></i>
+                    </label>
+                    
+                    <input type="radio" class="btn-check" name="viewMode" id="gridView" autocomplete="off">
+                    <label class="btn btn-outline-secondary" for="gridView">
+                        <i class="fas fa-th"></i>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Procedures List -->
+            <div id="proceduresList">
+                {% for procedimento in procedimentos %}
+                    <div class="card mb-3 fade-in procedure-card">
+                        <div class="card-body">
+                            <div class="row">
+                                {% if procedimento.imagem %}
+                                    <div class="col-md-3">
+                                        <img src="{{ procedimento.imagem.url }}" class="procedure-image" alt="{{ procedimento.titulo }}">
+                                    </div>
+                                    <div class="col-md-9">
+                                {% else %}
+                                    <div class="col-12">
+                                {% endif %}
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <h5 class="card-title mb-0">
+                                            <a href="{% url 'procedimentos:detalhe' procedimento.id %}" class="text-decoration-none">
+                                                {{ procedimento.titulo }}
+                                            </a>
+                                        </h5>
+                                        <div>
+                                            <span class="priority-badge priority-{{ procedimento.prioridade }}">
+                                                {{ procedimento.get_prioridade_display }}
+                                            </span>
+                                            <span class="status-badge status-{{ procedimento.status }} ms-1">
+                                                {{ procedimento.get_status_display }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="text-muted small mb-2">
+                                        <i class="fas fa-folder me-1" style="color: {{ procedimento.categoria.cor }};"></i>
+                                        {{ procedimento.categoria.nome }}
+                                        {% if procedimento.cliente %}
+                                            <i class="fas fa-user ms-2 me-1"></i>
+                                            {{ procedimento.cliente.nome }}
+                                        {% endif %}
+                                        <i class="fas fa-eye ms-2 me-1"></i>
+                                        {{ procedimento.visualizacoes }} visualizações
+                                    </div>
+                                    
+                                    <p class="card-text text-muted">
+                                        {{ procedimento.descricao|truncatewords:20 }}
+                                    </p>
+                                    
+                                    <!-- Tags -->
+                                    {% if procedimento.tags %}
+                                        <div class="mb-2">
+                                            {% for tag in procedimento.get_tags_list %}
+                                                <span class="tag">{{ tag }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock me-1"></i>
+                                            Atualizado em {{ procedimento.atualizado_em|date:"d/m/Y H:i" }}
+                                        </small>
+                                        
+                                        <div>
+                                            {% if procedimento.link_externo %}
+                                                <a href="{{ procedimento.link_externo }}" target="_blank" class="btn btn-sm btn-outline-primary me-1">
+                                                    <i class="fas fa-external-link-alt"></i>
+                                                </a>
+                                            {% endif %}
+                                            {% if procedimento.video_url %}
+                                                <a href="{{ procedimento.video_url }}" target="_blank" class="btn btn-sm btn-outline-danger me-1">
+                                                    <i class="fas fa-play"></i>
+                                                </a>
+                                            {% endif %}
+                                            <a href="{% url 'procedimentos:detalhe' procedimento.id %}" class="btn btn-sm btn-primary">
+                                                Ver Detalhes
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if procedimentos.has_other_pages %}
+                <nav aria-label="Navegação de páginas">
+                    <ul class="pagination justify-content-center">
+                        {% if procedimentos.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if categoria_selecionada %}categoria={{ categoria_selecionada }}&{% endif %}{% if prioridade_selecionada %}prioridade={{ prioridade_selecionada }}&{% endif %}page={{ procedimentos.previous_page_number }}">
+                                    Anterior
+                                </a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in procedimentos.paginator.page_range %}
+                            {% if procedimentos.number == num %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ num }}</span>
+                                </li>
+                            {% elif num > procedimentos.number|add:'-3' and num < procedimentos.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if categoria_selecionada %}categoria={{ categoria_selecionada }}&{% endif %}{% if prioridade_selecionada %}prioridade={{ prioridade_selecionada }}&{% endif %}page={{ num }}">
+                                        {{ num }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if procedimentos.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?{% if query %}q={{ query }}&{% endif %}{% if categoria_selecionada %}categoria={{ categoria_selecionada }}&{% endif %}{% if prioridade_selecionada %}prioridade={{ prioridade_selecionada }}&{% endif %}page={{ procedimentos.next_page_number }}">
+                                    Próximo
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+            
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-search text-muted" style="font-size: 4rem;"></i>
+                <h4 class="text-muted mt-3">Nenhum procedimento encontrado</h4>
+                <p class="text-muted">Tente ajustar os filtros ou criar um novo procedimento no admin.</p>
+                <a href="/admin/procedimentos/procedimento/add/" class="btn btn-primary">
+                    <i class="fas fa-plus me-1"></i>
+                    Criar Procedimento
+                </a>
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Quick Stats -->
+        <div class="stats-card mb-4">
+            <h6 class="fw-bold mb-2">
+                <i class="fas fa-chart-bar me-1"></i>
+                Estatísticas Rápidas
+            </h6>
+            <div class="row text-center">
+                <div class="col-6">
+                    <div class="h4 mb-0">{{ procedimentos.paginator.count|default:0 }}</div>
+                    <small>Procedimentos</small>
+                </div>
+                <div class="col-6">
+                    <div class="h4 mb-0">{{ categorias|length }}</div>
+                    <small>Categorias</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Categories -->
+        {% if categorias %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-folder me-1"></i>
+                        Categorias
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% for categoria in categorias %}
+                        <div class="d-flex align-items-center mb-2">
+                            <div class="me-2" style="width: 12px; height: 12px; background-color: {{ categoria.cor }}; border-radius: 50%;"></div>
+                            {% if categoria.icone %}
+                                <i class="{{ categoria.icone }} me-2 text-muted"></i>
+                            {% endif %}
+                            <a href="?categoria={{ categoria.id }}" class="text-decoration-none flex-grow-1">
+                                {{ categoria.nome }}
+                            </a>
+                            <span class="badge bg-light text-dark">
+                                {{ categoria.procedimentos.count }}
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        
+        <!-- Help -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-question-circle me-1"></i>
+                    Ajuda
+                </h6>
+            </div>
+            <div class="card-body">
+                <p class="small text-muted mb-2">
+                    <strong>Dicas de busca:</strong>
+                </p>
+                <ul class="small text-muted">
+                    <li>Use palavras-chave específicas</li>
+                    <li>Combine filtros para resultados precisos</li>
+                    <li>Tags ajudam a encontrar soluções similares</li>
+                </ul>
+                
+                <hr>
+                
+                <a href="/admin/procedimentos/" class="btn btn-sm btn-outline-primary w-100">
+                    <i class="fas fa-cog me-1"></i>
+                    Gerenciar Procedimentos
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // Quick filters
+    $('.filter-chip').click(function() {
+        const filter = $(this).data('filter');
+        const value = $(this).data('value');
+        
+        if (filter === 'categoria') {
+            $('#categoriaSelect').val(value);
+        } else if (filter === 'prioridade') {
+            $('#prioridadeSelect').val(value);
+        }
+        
+        $('#searchForm').submit();
+    });
+    
+    // Auto-submit on filter change
+    $('#categoriaSelect, #prioridadeSelect').change(function() {
+        $('#searchForm').submit();
+    });
+    
+    // Search input with delay
+    let searchTimeout;
+    $('#searchInput').on('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(function() {
+            // Could implement live search here
+        }, 500);
+    });
+    
+    // View mode toggle
+    $('input[name="viewMode"]').change(function() {
+        if ($(this).attr('id') === 'gridView') {
+            $('#proceduresList .procedure-card').addClass('col-md-6');
+        } else {
+            $('#proceduresList .procedure-card').removeClass('col-md-6');
+        }
+    });
+});
+</script>
+{% endblock %}

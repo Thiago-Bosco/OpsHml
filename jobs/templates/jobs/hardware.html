@@ -1,0 +1,82 @@
+{% if hardware %}
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+            </tr>
+        </thead>
+        <tbody>
+            {% for hardware_item in hardware %}
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>Marca:</strong></td>
+                    <td>{{ hardware_item.marca }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>Modelo:</strong></td>
+                    <td>{{ hardware_item.modelo }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>Número de Série:</strong></td>
+                    <td>{{ hardware_item.serial_number }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>Descrição:</strong></td>
+                    <td>{{ hardware_item.descricao }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>Local:</strong></td>
+                    <td>{{ hardware_item.local }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>Fornecedor de Manutenção:</strong></td>
+                    <td>{{ hardware_item.fornecedor_manut }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>Data Inicial de Manutenção:</strong></td>
+                    <td>{{ hardware_item.data_inicial_manut }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>Data Final de Manutenção:</strong></td>
+                    <td>{{ hardware_item.data_final_manut }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>Meses Contratados:</strong></td>
+                    <td>{{ hardware_item.meses_contratados }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>Dias para Término:</strong></td>
+                    <td>{{ hardware_item.dias_para_termino }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>Status do Contrato:</strong></td>
+                    <td>{{ hardware_item.status_contrato }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>Brand:</strong></td>
+                    <td>{{ hardware_item.brand }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>End Datacenter:</strong></td>
+                    <td>{{ hardware_item.end_datacenter }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>Rack:</strong></td>
+                    <td>{{ hardware_item.rack }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>Storage:</strong></td>
+                    <td>{{ hardware_item.storage }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>IP:</strong></td>
+                    <td>{{ hardware_item.ip }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>Alerta:</strong></td>
+                    <td>{{ hardware_item.alerta }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+
+{% endif %}

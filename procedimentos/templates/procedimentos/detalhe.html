@@ -1,0 +1,277 @@
+{% extends 'procedimentos/base.html' %}
+
+{% block title %}{{ procedimento.titulo }} - OpsFinder{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <!-- Main Content -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <!-- Header -->
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h1 class="h3 mb-2">{{ procedimento.titulo }}</h1>
+                        <div class="text-muted">
+                            <i class="fas fa-folder me-1" style="color: {{ procedimento.categoria.cor }};"></i>
+                            {{ procedimento.categoria.nome }}
+                            {% if procedimento.cliente %}
+                                <i class="fas fa-user ms-3 me-1"></i>
+                                {{ procedimento.cliente.nome }}
+                                {% if procedimento.cliente.empresa %}
+                                    ({{ procedimento.cliente.empresa }})
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="text-end">
+                        <span class="priority-badge priority-{{ procedimento.prioridade }} d-block mb-1">
+                            {{ procedimento.get_prioridade_display }}
+                        </span>
+                        <span class="status-badge status-{{ procedimento.status }}">
+                            {{ procedimento.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Image -->
+                {% if procedimento.imagem %}
+                    <div class="mb-4">
+                        <img src="{{ procedimento.imagem.url }}" class="img-fluid rounded" alt="{{ procedimento.titulo }}" style="max-height: 400px;">
+                    </div>
+                {% endif %}
+                
+                <!-- Description -->
+                <div class="mb-4">
+                    <h5>
+                        <i class="fas fa-info-circle text-primary me-2"></i>
+                        Descrição do Problema
+                    </h5>
+                    <div class="bg-light p-3 rounded">
+                        {{ procedimento.descricao|linebreaks }}
+                    </div>
+                </div>
+                
+                <!-- Solution -->
+                <div class="mb-4">
+                    <h5>
+                        <i class="fas fa-tools text-success me-2"></i>
+                        Solução
+                    </h5>
+                    <div class="bg-light p-3 rounded">
+                        {{ procedimento.solucao|linebreaks }}
+                    </div>
+                </div>
+                
+                <!-- Tags -->
+                {% if procedimento.tags %}
+                    <div class="mb-4">
+                        <h6>
+                            <i class="fas fa-tags text-secondary me-2"></i>
+                            Tags
+                        </h6>
+                        {% for tag in procedimento.get_tags_list %}
+                            <span class="tag">{{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <!-- External Links -->
+                {% if procedimento.link_externo or procedimento.video_url %}
+                    <div class="mb-4">
+                        <h6>
+                            <i class="fas fa-link text-info me-2"></i>
+                            Links Úteis
+                        </h6>
+                        <div class="d-flex gap-2">
+                            {% if procedimento.link_externo %}
+                                <a href="{{ procedimento.link_externo }}" target="_blank" class="btn btn-outline-primary">
+                                    <i class="fas fa-external-link-alt me-1"></i>
+                                    Documentação Externa
+                                </a>
+                            {% endif %}
+                            {% if procedimento.video_url %}
+                                <a href="{{ procedimento.video_url }}" target="_blank" class="btn btn-outline-danger">
+                                    <i class="fas fa-play me-1"></i>
+                                    Vídeo Explicativo
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <!-- Actions -->
+                <div class="mt-4 pt-4 border-top">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <button class="btn btn-outline-warning ms-2" onclick="reportarProblema()">
+                                <i class="fas fa-exclamation-triangle me-1"></i>
+                                Reportar Problema
+                            </button>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <a href="{% url 'procedimentos:buscar' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left me-1"></i>
+                                Voltar à Busca
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sidebar -->
+    <div class="col-lg-4">
+        <!-- Procedure Info -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-info me-1"></i>
+                    Informações
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-6"><strong>Visualizações:</strong></div>
+                    <div class="col-6">{{ procedimento.visualizacoes }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6"><strong>Eficácia:</strong></div>
+                    <div class="col-6">{{ procedimento.eficacia }} resoluções</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6"><strong>Criado por:</strong></div>
+                    <div class="col-6">{{ procedimento.criado_por.username }}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-6"><strong>Criado em:</strong></div>
+                    <div class="col-6">{{ procedimento.criado_em|date:"d/m/Y" }}</div>
+                </div>
+                <div class="row">
+                    <div class="col-6"><strong>Atualizado:</strong></div>
+                    <div class="col-6">{{ procedimento.atualizado_em|date:"d/m/Y" }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Related Procedures -->
+        {% if relacionados %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0">
+                        <i class="fas fa-sitemap me-1"></i>
+                        Procedimentos Relacionados
+                    </h6>
+                </div>
+                <div class="card-body">
+                    {% for relacionado in relacionados %}
+                        <div class="mb-3">
+                            <h6 class="mb-1">
+                                <a href="{% url 'procedimentos:detalhe' relacionado.id %}" class="text-decoration-none">
+                                    {{ relacionado.titulo|truncatechars:50 }}
+                                </a>
+                            </h6>
+                            <small class="text-muted">
+                                <span class="priority-badge priority-{{ relacionado.prioridade }}">
+                                    {{ relacionado.get_prioridade_display }}
+                                </span>
+                                <i class="fas fa-eye ms-2 me-1"></i>
+                                {{ relacionado.visualizacoes }}
+                            </small>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0">
+                    <i class="fas fa-bolt me-1"></i>
+                    Ações Rápidas
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="/admin/procedimentos/procedimento/{{ procedimento.id }}/change/" class="btn btn-outline-primary btn-sm">
+                        <i class="fas fa-edit me-1"></i>
+                        Editar Procedimento
+                    </a>
+                    <button class="btn btn-outline-info btn-sm" onclick="copiarLink()">
+                        <i class="fas fa-copy me-1"></i>
+                        Copiar Link
+                    </button>
+                    <button class="btn btn-outline-secondary btn-sm" onclick="imprimirProcedimento()">
+                        <i class="fas fa-print me-1"></i>
+                        Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+
+function reportarProblema() {
+    const motivo = prompt('Descreva o problema encontrado neste procedimento:');
+    
+    if (motivo) {
+        
+        $.ajax({
+            type: 'POST',
+            url: '/procedimentos/api/reportar-problema/',  // Endpoint no backend
+            data: {
+                'procedimento_id': {{ procedimento.id }},  // ID do procedimento 
+                'motivo': motivo,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'  // 
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert('Problema reportado com sucesso! Obrigado pelo feedback.');
+                } else {
+                    alert('Erro ao reportar o problema. Tente novamente.');
+                }
+            },
+            error: function() {
+                alert('Erro ao se comunicar com o servidor. Tente novamente.');
+            }
+        });
+    } else {
+        alert('Por favor, descreva o problema antes de enviar.');
+    }
+}
+
+
+function copiarLink() {
+    navigator.clipboard.writeText(window.location.href).then(function() {
+        alert('Link copiado para a área de transferência!');
+    });
+}
+
+function imprimirProcedimento() {
+    window.print();
+}
+
+// Auto-focus no botão de resolver para facilitar o uso
+$(document).ready(function() {
+    // Registrar visualização
+    $.post('/procedimentos/api/registrar-visualizacao/', {
+        'procedimento_id': {{ procedimento.id }},
+        'csrfmiddlewaretoken': '{{ csrf_token }}'
+    });
+});
+</script>
+
+<style>
+@media print {
+    .navbar, .col-lg-4, .btn, .card-header { display: none !important; }
+    .col-lg-8 { width: 100% !important; }
+    .card { box-shadow: none !important; border: 1px solid #e2e2e2 !important; }
+}
+</style>
+{% endblock %}

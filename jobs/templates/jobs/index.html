@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"> 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/five-icons/dist/five-icons.min.css">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <meta name="theme-color" content="#ffffff">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="d-flex">
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="{% url 'search_jobs' %}"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="{% url 'dashboard' %}"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+                <li><a href="{% url 'admin:index' %}"><i class="fas fa-user-cog"></i> Admin</a></li>
+                <li><a href="{% url 'all_servers' %}"><i class="fas fa-server"></i> Servers C&C</a></li>
+                <li><a href="{% url 'all_FastShop' %}"><i class="fas fa-server"></i> Servers Fast</a></li>
+                <li><a href="{% url 'hard' %}"><i class="fas fa-microchip"></i> Hardware</a></li>
+                <li><a href="{% url 'all_jobs' %}"><i class="fas fa-table"></i> TWS</a></li>
+                <li><a href="{% url 'ajuda' %}"><i class="fas fa-question-circle"></i> Ajuda</a></li>
+            </ul>
+
+            <li><a href="{% url 'procedimentos:buscar' %}" class="btn btn-primary">
+                    <i class="fas fa-cogs"></i> Procedimentos
+                </a></li>
+            </ul>
+
+            
+            <div class="sidebar-footer"> 
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger" aria-label="Logout">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </nav>
+
+        <main class="content flex-grow-1">
+            <header>
+		   <h1 class="mt-4 mb-4 text-center">C&C</h1>
+	    </header>
+            <div class="container">
+                <form id="search-form" method="post" class="mb-4">
+                    {% csrf_token %}
+                    <div class="search-bar d-flex justify-content-center">
+                        <input type="text" name="search_query" placeholder="Busque..." class="form-control me-2" autocomplete="on">
+                        <button type="submit">
+                            <img src="{% static 'images/icons/discernimento.png' %}" alt="Buscar" style="width: 20px; height: 20px;">
+                        </button>
+                    </div>
+                </form>
+                
+                <div id="server_results">
+                    {% include 'jobs/server.html' %}
+                    <!-- Paginação para servidores -->
+                    <nav aria-label="Navegação de página para servidores" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if Servidores_CC.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1&num_display={{ num_display }}">Primeira</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ Servidores_CC.previous_page_number }}&num_display={{ num_display }}">Anterior</a>
+                                </li>
+                            {% endif %}
+
+                            {% for i in Servidores_CC.paginator.page_range %}
+                                {% if i >= Servidores_CC.number|add:-2 and i <= Servidores_CC.number|add:2 %}
+                                    <li class="page-item {% if Servidores_CC.number == i %}active{% endif %}">
+                                        <a class="page-link" href="?page={{ i }}&num_display={{ num_display }}">{{ i }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+
+                            {% if Servidores_CC.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ Servidores_CC.next_page_number }}&num_display={{ num_display }}">Próximo</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+
+                <div id="job-results">
+                    {% include 'jobs/results.html' %}
+                    <!-- Paginação para jobs -->
+                    <nav aria-label="Navegação de página para jobs" class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            {% if jobs.has_previous %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page=1&num_display={{ num_display }}">Primeira</a>
+                                </li>
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ jobs.previous_page_number }}&num_display={{ num_display }}">Anterior</a>
+                                </li>
+                            {% endif %}
+                            
+                            {% for i in jobs.paginator.page_range %}
+                                {% if i >= jobs.number|add:-2 and i <= jobs.number|add:2 %}
+                                    <li class="page-item {% if jobs.number == i %}active{% endif %}">
+                                        <a class="page-link" href="?page={{ i }}&num_display={{ num_display }}">{{ i }}</a>
+                                    </li>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% if jobs.has_next %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ jobs.next_page_number }}&num_display={{ num_display }}">Próximo</a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </nav>
+                </div>
+
+                <div id="Cc_fast">
+                    {% include 'jobs/Cc_fast.html' %}
+                </div>
+
+                <div id="hardware">
+                    {% include 'jobs/hardware.html' %}
+                </div>
+
+
+                <div id="dashboard-content">
+                    {% if request.path == '/dashboard/' %}
+                        {% include 'jobs/dashboard.html' %}
+                    {% endif %}
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#sidebar-toggle').click(function() {
+                $('#sidebar').toggleClass('hidden');
+                $('.content').toggleClass('expanded');
+            });
+        });
+    </script>
+</body>
+</html>
