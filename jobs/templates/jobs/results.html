@@ -1,394 +1,55 @@
 {% if jobs %}
-<div class="jobs-section">
-    <div class="section-header mb-4">
-    </div>
-    
-    <div class="jobs-grid">
-        {% for job in jobs %}
-        <div class="job-card">
-            <div class="job-header">
-                <div class="job-icon">
-                    <i class="fas fa-cog"></i>
-                </div>
-                <div class="job-title">
-                    <h3>{{ job.job_name }}</h3>
-                    <span class="job-stream">Stream: {{ job.job_stream }}</span>
-                </div>
-                <div class="job-criticality">
-                    {% if job.criticality == 'Alta' or job.criticality == 'HIGH' %}
-                        <span class="criticality-badge critical-high">
-                            <i class="fas fa-exclamation-triangle"></i> Alta
-                        </span>
-                    {% elif job.criticality == 'Média' or job.criticality == 'MEDIUM' %}
-                        <span class="criticality-badge critical-medium">
-                            <i class="fas fa-exclamation-circle"></i> Média
-                        </span>
-                    {% else %}
-                        <span class="criticality-badge critical-low">
-                            <i class="fas fa-info-circle"></i> {{ job.criticality|default:"Baixa" }}
-                        </span>
-                    {% endif %}
-                </div>
-            </div>
-            
-            <div class="job-body">
-                <div class="job-info-grid">
-                    <div class="info-section">
-                        <h4><i class="fas fa-server"></i> Sistema</h4>
-                        <div class="info-items">
-                            <div class="info-item">
-                                <label>Workstation</label>
-                                <value>{{ job.workstation|default:"Não informado" }}</value>
-                            </div>
-                            <div class="info-item">
-                                <label>Aplicação</label>
-                                <value>{{ job.APLICACAO|default:"Não informado" }}</value>
-                            </div>
-                            <div class="info-item">
-                                <label>Horário de Acionamento</label>
-                                <value class="schedule-time">{{ job.activation_time|default:"Não definido" }}</value>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="info-section">
-                        <h4><i class="fas fa-users"></i> Responsáveis</h4>
-                        <div class="responsibles-list">
-                            {% if job.first_responsible %}
-                            <div class="responsible-item primary">
-                                <i class="fas fa-user-tie"></i>
-                                <span class="responsible-level">1º</span>
-                                <span class="responsible-name">{{ job.first_responsible }}</span>
-                            </div>
-                            {% endif %}
-                            
-                            {% if job.second_responsible %}
-                            <div class="responsible-item secondary">
-                                <i class="fas fa-user"></i>
-                                <span class="responsible-level">2º</span>
-                                <span class="responsible-name">{{ job.second_responsible }}</span>
-                            </div>
-                            {% endif %}
-                            
-                            {% if job.third_responsible %}
-                            <div class="responsible-item tertiary">
-                                <i class="fas fa-user"></i>
-                                <span class="responsible-level">3º</span>
-                                <span class="responsible-name">{{ job.third_responsible }}</span>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                
-                {% if job.descricao %}
-                <div class="description-section">
-                    <h4><i class="fas fa-file-alt"></i> Descrição</h4>
-                    <p>{{ job.descricao }}</p>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-        {% endfor %}
-    </div>
-</div>
-
-<style>
-.jobs-section {
-    padding: 1rem;
-}
-
-.section-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.section-title {
-    font-size: 2rem;
-    font-weight: 700;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 0.5rem;
-}
-
-.section-subtitle {
-    color: #6c757d;
-    font-size: 1.1rem;
-}
-
-.jobs-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
-    gap: 2rem;
-}
-
-.job-card {
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.job-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-
-.job-header {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    padding: 1.5rem;
-    color: white;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.job-icon {
-    background: rgba(255, 255, 255, 0.2);
-    padding: 1rem;
-    border-radius: 50%;
-    font-size: 1.5rem;
-    animation: rotate 3s linear infinite;
-}
-
-@keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-.job-title h3 {
-    margin: 0;
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-.job-stream {
-    font-size: 0.9rem;
-    opacity: 0.9;
-}
-
-.job-criticality {
-    margin-left: auto;
-}
-
-.criticality-badge {
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 500;
-}
-
-.critical-high {
-    background: rgba(220, 53, 69, 0.2);
-    color: #dc3545;
-}
-
-.critical-medium {
-    background: rgba(255, 193, 7, 0.2);
-    color: #ffc107;
-}
-
-.critical-low {
-    background: rgba(40, 167, 69, 0.2);
-    color: #28a745;
-}
-
-.job-body {
-    padding: 1.5rem;
-}
-
-.job-info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-    margin-bottom: 1.5rem;
-}
-
-.info-section h4 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #495057;
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    border-bottom: 2px solid #f8f9fa;
-    padding-bottom: 0.5rem;
-}
-
-.info-items {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.info-item {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-}
-
-.info-item label {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: #6c757d;
-    text-transform: uppercase;
-}
-
-.info-item value {
-    font-weight: 500;
-    color: #2c3e50;
-}
-
-.schedule-time {
-    background: #e3f2fd;
-    padding: 0.25rem 0.5rem;
-    border-radius: 5px;
-    font-family: monospace;
-    color: #1976d2;
-}
-
-.responsibles-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.responsible-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    border-radius: 8px;
-    background: #f8f9fa;
-}
-
-.responsible-item.primary {
-    background: #e8f5e8;
-    border-left: 3px solid #28a745;
-}
-
-.responsible-item.secondary {
-    background: #fff3cd;
-    border-left: 3px solid #ffc107;
-}
-
-.responsible-item.tertiary {
-    background: #f8d7da;
-    border-left: 3px solid #dc3545;
-}
-
-.responsible-level {
-    background: rgba(0, 0, 0, 0.1);
-    padding: 0.2rem 0.4rem;
-    border-radius: 50%;
-    font-size: 0.75rem;
-    font-weight: 600;
-    min-width: 20px;
-    text-align: center;
-}
-
-.responsible-name {
-    font-weight: 500;
-    color: #2c3e50;
-}
-
-.description-section {
-    border-top: 1px solid #e9ecef;
-    padding-top: 1rem;
-}
-
-.description-section h4 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #495057;
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.description-section p {
-    color: #6c757d;
-    line-height: 1.6;
-    margin: 0;
-}
-
-.job-footer {
-    background: #f8f9fa;
-    padding: 1rem 1.5rem;
-    border-top: 1px solid #e9ecef;
-}
-
-.job-actions {
-    display: flex;
-    gap: 0.5rem;
-    justify-content: flex-end;
-}
-
-.btn-action {
-    background: white;
-    border: 1px solid #dee2e6;
-    color: #6c757d;
-    padding: 0.5rem;
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-action:hover {
-    background: #007bff;
-    color: white;
-    border-color: #007bff;
-    transform: scale(1.1);
-}
-
-@media (max-width: 768px) {
-    .jobs-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .job-header {
-        flex-direction: column;
-        text-align: center;
-        gap: 0.5rem;
-    }
-    
-    .job-criticality {
-        margin-left: 0;
-    }
-    
-    .job-info-grid {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
-
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+            </tr>
+        </thead>
+        <tbody>
+            {% for job in jobs %}
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>Nome do Job :</strong></td>
+                    <td>{{ job.job_name }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>JOB STREAM :</strong></td>
+                    <td>{{ job.job_stream }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>WORKSTATION :</strong></td>
+                    <td>{{ job.workstation }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>APLICACAO :</strong></td>
+                    <td>{{ job.APLICACAO }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>1º RESPONSÁVEL :</strong></td>
+                    <td>{{ job.first_responsible }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>2º RESPONSÁVEL :</strong></td>
+                    <td>{{ job.second_responsible }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>3º RESPONSÁVEL :</strong></td>
+                    <td>{{ job.third_responsible }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>HORÁRIO DE ACIONAMENTO :</strong></td>
+                    <td>{{ job.activation_time }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>CRITICIDADE :</strong></td>
+                    <td>{{ job.criticality }}</td>
+                </tr>
+                <tr class="{% if forloop.counter|divisibleby:2 %}even-row{% else %}odd-row{% endif %}">
+                    <td><strong>DESCRIÇÃO :</strong></td>
+                    <td>{{ job.descricao }}</td>
+                </tr>
+		     <td colspan="2"></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 {% else %}
-
-
-<style>
-.empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
-    color: #6c757d;
-}
-
-.empty-icon {
-    font-size: 4rem;
-    margin-bottom: 1rem;
-    opacity: 0.5;
-}
-
-.empty-state h3 {
-    margin-bottom: 0.5rem;
-}
-</style>
 {% endif %}
